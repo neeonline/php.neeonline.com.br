@@ -1,0 +1,1 @@
+<?	/*	Translation Location: en_US	Translation Title: English US	Translation Author: Allan Christian	Translation Version: 0.0.0	*/		$I18N_pt_BR = array(		'location_title'	=> "English US",	);?>
