@@ -16,9 +16,11 @@
 			parent::__construct();
 		}
 		
-		public function load($defaultLocation = 'pt_BR', $ignoreCache = false, $languagePath = 'i18n/')
+		public function load($defaultLocation = 'pt_BR', $ignoreCache = false, $languagePath = '')
 		{
 			$this->_defaultLocation = $defaultLocation;
+			
+			if ($languagePath == '') $languagePath = __DIR__ . '/i18n/';
 			
 			$location = $defaultLocation;
 			
@@ -29,11 +31,11 @@
 				else if ($savedLanguage = isset($_COOKIE['i18n']) ? $_COOKIE['i18n'] : false) $location = $savedLanguage;
 			}
 			
-			$languageFile = __DIR__ . '/' . $languagePath . $location . '.neeonline.language.php';
+			$languageFile = $languagePath . $location . '.neeonline.language.php';
 			
 			if (!file_exists($languageFile))
 			{
-				$languageFile = __DIR__ . '/' . $languagePath . $this->_defaultLocation . '.neeonline.language.php';
+				$languageFile = $languagePath . $this->_defaultLocation . '.neeonline.language.php';
 				
 				if (!file_exists($languageFile)) trigger_error("Neeonline::I18N::__construct error: language file not found.", E_USER_ERROR);
 				
@@ -61,16 +63,16 @@
 		{
 			$returnValue = array();
 			
-			if ($locations = @scandir(__DIR__ . '/' . $this->_languagePath))
+			if ($locations = @scandir($this->_languagePath))
 			{
 				for ($i = 0; $i < sizeof($locations); $i++)
 				{
 					$currentFile = $locations[$i];
 					
-					if (strpos($currentFile, '.neeonline.language.php') && file_exists(__DIR__ . '/' . $this->_languagePath . $currentFile))
+					if (strpos($currentFile, '.neeonline.language.php') && file_exists($this->_languagePath . $currentFile))
 					{
-						$fp			= fopen(__DIR__ . '/' . $this->_languagePath . $currentFile, 'r');
-						$fileData	= fread( $fp, 8192 );
+						$fp			= fopen($this->_languagePath . $currentFile, 'r');
+						$fileData	= fread($fp, 8192);
 						fclose($fp);
 						
 						$fileData = str_replace("\r", "\n", $fileData);
