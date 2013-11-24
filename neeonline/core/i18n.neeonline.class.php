@@ -18,9 +18,9 @@
 		
 		public function load($defaultLocation = 'pt_BR', $ignoreCache = false, $languagePath = '')
 		{
-			$this->_defaultLocation = $defaultLocation;
-			
 			if ($languagePath == '') $languagePath = __DIR__ . '/i18n/';
+			
+			$this->_defaultLocation = $defaultLocation;
 			
 			$location = $defaultLocation;
 			
@@ -53,6 +53,45 @@
 			if (!$ignoreCache) setcookie('i18n', $this->location, time() + 60 * 60 * 24 * 30);
 		}
 		
+		public function exportLocationData($location = '')
+		{
+			if (!isset($this->_languagePath) || !isset($this->_language)) return false;
+			
+			if ($location == '') $location = $this->location;
+			
+			$languageFile = $this->_languagePath . $location . '.neeonline.language.php';
+			
+			if (!file_exists($languageFile)) return false;
+			
+			include($languageFile);
+			
+			$languageData = 'I18N_' . $location;
+			$language = $$languageData;
+			
+			return $language;
+		}
+		
+		public function getFirstLanguage($languagePath = '')
+		{
+			if ($languagePath == '') $languagePath = __DIR__ . '/i18n/';
+			
+			$languagesList = explode(",", $_SERVER["HTTP_ACCEPT_LANGUAGE"]);
+			$firstLanguage = $languagesList[0];
+			
+			if (strpos($firstLanguage, '-') !== false)
+			{
+				$arrLanguage = explode('-', $firstLanguage);
+				
+				$firstLanguage = $arrLanguage[0] . '_' . strtoupper($arrLanguage[1]);
+			}
+			
+			$languageFile = $languagePath . $firstLanguage . '.neeonline.language.php';
+			
+			if (file_exists($languageFile)) return $firstLanguage;
+			
+			return '';
+		}
+		
 		public function e($key)
 		{
 			if (isset($this->_language) && isset($this->_language[$key])) return $this->_language[$key];
@@ -72,7 +111,7 @@
 					if (strpos($currentFile, '.neeonline.language.php') && file_exists($this->_languagePath . $currentFile))
 					{
 						$fp			= fopen($this->_languagePath . $currentFile, 'r');
-						$fileData	= fread($fp, 8192);
+						$fileData	= fread( $fp, 8192 );
 						fclose($fp);
 						
 						$fileData = str_replace("\r", "\n", $fileData);
